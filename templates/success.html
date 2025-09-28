@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Success!{% endblock %}
+
+{% block content %}
+  <div class="text-center py-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h1 class="display-4">✅ Success!</h1>
+    <p class="lead">Your expense has been logged successfully.</p>
+    <hr class="my-4">
+    <a class="btn btn-primary" href="{{ url_for('add_expense') }}" role="button">Add Another Expense</a>
+    <a class="btn btn-secondary" href="{{ url_for('view_expenses') }}" role="button">View All Expenses</a>
+  </div>
+{% endblock %}
