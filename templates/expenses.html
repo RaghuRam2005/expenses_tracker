@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}View Expenses{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>All Expenses</h2>
+    <h3 class="text-danger">Total: ${{ "%.2f"|format(total) }}</h3>
+  </div>
+
+  <form method="GET" action="{{ url_for('view_expenses') }}" class="mb-4">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <select name="category" class="form-select">
+          <option value="">-- Filter by Category --</option>
+          {% for cat in categories %}
+            <option value="{{ cat }}" {% if cat == current_filter %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        <a href="{{ url_for('view_expenses') }}" class="btn btn-outline-secondary">Clear</a>
+      </div>
+    </div>
+  </form>
+
+  {% if expenses %}
+    <div class="list-group">
+      {% for expense in expenses %}
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1 text-primary">{{ expense.category }}</h5>
+            <strong class="text-success">${{ "%.2f"|format(expense.amount) }}</strong>
+          </div>
+          <p class="mb-1">{{ expense.notes if expense.notes else 'No notes provided.' }}</p>
+          <small class="text-muted">{{ expense.date_posted.strftime('%A, %B %d, %Y') }}</small>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      No expenses found. <a href="{{ url_for('add_expense') }}" class="alert-link">Add one now!</a>
+    </div>
+  {% endif %}
+{% endblock %}
