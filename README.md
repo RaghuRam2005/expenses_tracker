@@ -1,8 +1,8 @@
-# 💰 Expense Tracker App
+# Expense Tracker App
 
 A simple web application built with Flask and Bootstrap to log, categorize, and view daily expenses.
 
-## ✨ Features
+## Features
 
 * Log expenses with amount, category, date, and notes.
 * View a complete list of all expenses.
@@ -10,14 +10,14 @@ A simple web application built with Flask and Bootstrap to log, categorize, and 
 * Filter expenses by category.
 * Client-side form validation to ensure data integrity.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Backend**: Python (Flask)
 * **Database**: SQLite (with Flask-SQLAlchemy)
 * **Frontend**: HTML, Bootstrap 5
 * **JavaScript**: jQuery for form validation
 
-## 🚀 Setup and Run
+## Setup and Run
 
 1. **Clone the repository**
     ```bash
