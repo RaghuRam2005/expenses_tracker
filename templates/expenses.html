@@ -3,44 +3,55 @@
 {% block title %}View Expenses{% endblock %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>All Expenses</h2>
-    <h3 class="text-danger">Total: ${{ "%.2f"|format(total) }}</h3>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-3 mb-md-0">Expense History</h2>
+    <h4 class="total-display">Total: ${{ "%.2f"|format(total) }}</h4>
   </div>
 
-  <form method="GET" action="{{ url_for('view_expenses') }}" class="mb-4">
-    <div class="row g-2">
-      <div class="col-md-4">
-        <select name="category" class="form-select">
-          <option value="">-- Filter by Category --</option>
+  <div class="card p-3 mb-4">
+    <form method="GET" action="{{ url_for('view_expenses') }}" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <label for="category" class="visually-hidden">Filter by Category</label>
+        <select name="category" id="category" class="form-select">
+          <option value="">-- All Categories --</option>
           {% for cat in categories %}
             <option value="{{ cat }}" {% if cat == current_filter %}selected{% endif %}>{{ cat }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-md-4">
-        <button type="submit" class="btn btn-secondary">Filter</button>
+        <button type="submit" class="btn btn-dark"><i class="bi bi-funnel me-1"></i> Filter</button>
         <a href="{{ url_for('view_expenses') }}" class="btn btn-outline-secondary">Clear</a>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 
   {% if expenses %}
-    <div class="list-group">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       {% for expense in expenses %}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1 text-primary">{{ expense.category }}</h5>
-            <strong class="text-success">${{ "%.2f"|format(expense.amount) }}</strong>
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <h5 class="card-title fw-bold text-dark">{{ expense.category }}</h5>
+                <p class="card-text fs-5 fw-bold text-success">${{ "%.2f"|format(expense.amount) }}</p>
+              </div>
+              <p class="card-text text-muted mb-2">{{ expense.notes if expense.notes else 'No notes provided.' }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-end">
+              <small class="text-muted"><i class="bi bi-calendar3 me-1"></i> {{ expense.date_posted.strftime('%B %d, %Y') }}</small>
+            </div>
           </div>
-          <p class="mb-1">{{ expense.notes if expense.notes else 'No notes provided.' }}</p>
-          <small class="text-muted">{{ expense.date_posted.strftime('%A, %B %d, %Y') }}</small>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <div class="alert alert-info" role="alert">
-      No expenses found. <a href="{{ url_for('add_expense') }}" class="alert-link">Add one now!</a>
+    <div class="text-center py-5">
+        <h4>No Expenses Found!</h4>
+        <p class="text-muted">It looks like there's nothing here yet. Why not add one?</p>
+        <a href="{{ url_for('add_expense') }}" class="btn btn-dark mt-2">
+            <i class="bi bi-plus-circle me-1"></i> Add Your First Expense
+        </a>
     </div>
   {% endif %}
 {% endblock %}
