@@ -5,39 +5,48 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
-    <h2 class="mb-4">Log a New Expense</h2>
-    <div class="card p-4">
+    <h2 class="mb-4 text-center fw-bold">Log a New Expense</h2>
+    <div class="card p-4 p-md-5">
       <form id="expenseForm" action="{{ url_for('add_expense') }}" method="POST">
         <div class="mb-3">
-          <label for="amount" class="form-label">Amount ($)</label>
-          <input type="text" class="form-control" id="amount" name="amount" required placeholder="e.g., 25.50">
-          <div id="amountError" class="invalid-feedback">Amount must be a valid number.</div>
+          <label for="amount" class="form-label">Amount</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+            <input type="text" class="form-control" id="amount" name="amount" required placeholder="e.g., 25.50">
+          </div>
+          <div id="amountError" class="invalid-feedback d-block">Amount must be a valid number.</div>
         </div>
 
         <div class="mb-3">
           <label for="category" class="form-label">Category</label>
-          <select class="form-select" id="category" name="category" required>
-            <option value="" selected disabled>-- Select a Category --</option>
-            <option value="Food">Food</option>
-            <option value="Travel">Travel</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Other">Other</option>
-          </select>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+            <select class="form-select" id="category" name="category" required>
+              <option value="" selected disabled>-- Select a Category --</option>
+              <option value="Food">Food</option>
+              <option value="Travel">Travel</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
 
         <div class="mb-3">
           <label for="date" class="form-label">Date</label>
-          <input type="date" class="form-control" id="date" name="date" required>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+            <input type="date" class="form-control" id="date" name="date" required>
+          </div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-4">
           <label for="notes" class="form-label">Notes (Optional)</label>
           <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="e.g., Lunch with colleagues"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Add Expense</button>
+        <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">Add Expense</button>
       </form>
     </div>
   </div>
@@ -45,5 +54,9 @@
 {% endblock %}
 
 {% block scripts %}
+  <script>
+    // Hide error message initially
+    $('#amountError').hide(); 
+  </script>
   <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
 {% endblock %}
