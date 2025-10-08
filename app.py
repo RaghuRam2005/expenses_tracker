@@ -1,16 +1,15 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from collections import defaultdict
 
 # Get the base directory of the project
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # --- App & Database Configuration ---
 app = Flask(__name__)
-# Secret key is needed for flashing messages
-app.config['SECRET_KEY'] = 'your_super_secret_key' 
-# Configure the SQLite database URI
+app.config['SECRET_KEY'] = 'your_super_secret_key_change_me'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'expenses.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -39,56 +38,57 @@ def add_expense():
     if request.method == 'POST':
         amount = request.form.get('amount')
         category = request.form.get('category')
-        # Convert date string from form (YYYY-MM-DD) to a Python date object
         date_str = request.form.get('date')
         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
         notes = request.form.get('notes')
 
-        # Create new expense object
         new_expense = Expense(
-            amount=float(amount), 
-            category=category, 
-            date_posted=date_obj, 
+            amount=float(amount),
+            category=category,
+            date_posted=date_obj,
             notes=notes
         )
 
-        # Add to database and commit
         db.session.add(new_expense)
         db.session.commit()
-        
-        # Flash a success message
-        flash(f"Expense of ${amount} for {category} added successfully!", "success")
-        return redirect(url_for('success'))
-        
+        # This redirect correctly passes the ID to the success route
+        return redirect(url_for('success', expense_id=new_expense.id))
+
     return render_template('add_expense.html')
 
 @app.route('/expenses')
 def view_expenses():
-    """Displays all expenses and calculates total."""
+    """Displays all expenses and calculates totals."""
     filter_category = request.args.get('category')
-    
+
     if filter_category:
         expenses = Expense.query.filter_by(category=filter_category).order_by(Expense.date_posted.desc()).all()
     else:
         expenses = Expense.query.order_by(Expense.date_posted.desc()).all()
-        
+
     total_expenses = sum(expense.amount for expense in expenses)
-    
-    # Get unique categories for the filter dropdown
+
     categories = db.session.query(Expense.category).distinct().all()
-    # Flatten the list of tuples
     categories = [cat[0] for cat in categories]
 
-    return render_template('expenses.html', expenses=expenses, total=total_expenses, categories=categories, current_filter=filter_category)
+    return render_template(
+        'expenses.html',
+        expenses=expenses,
+        total=total_expenses,
+        categories=categories,
+        current_filter=filter_category
+    )
 
-
-@app.route('/success')
-def success():
-    """Renders a confirmation page."""
-    return render_template('success.html')
+@app.route('/success/<int:expense_id>')
+def success(expense_id):
+    """Renders a confirmation receipt for a specific expense."""
+    # This line fetches the expense from the DB using the ID
+    expense = Expense.query.get_or_404(expense_id)
+    # This correctly passes the 'expense' object to the template
+    return render_template('success.html', expense=expense)
 
 if __name__ == '__main__':
-    # Create the database and tables if they don't exist
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
