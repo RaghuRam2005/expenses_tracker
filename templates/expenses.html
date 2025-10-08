@@ -3,55 +3,62 @@
 {% block title %}View Expenses{% endblock %}
 
 {% block content %}
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-3 mb-md-0">Expense History</h2>
-    <h4 class="total-display">Total: ${{ "%.2f"|format(total) }}</h4>
-  </div>
+<div class="glass-card text-dark p-4 p-md-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold m-0">My Expenses</h1>
+        <h3 class="fw-bold m-0 text-danger">Total: ${{ "%.2f"|format(total) }}</h3>
+    </div>
 
-  <div class="card p-3 mb-4">
-    <form method="GET" action="{{ url_for('view_expenses') }}" class="row g-2 align-items-center">
-      <div class="col-md-5">
-        <label for="category" class="visually-hidden">Filter by Category</label>
-        <select name="category" id="category" class="form-select">
-          <option value="">-- All Categories --</option>
-          {% for cat in categories %}
-            <option value="{{ cat }}" {% if cat == current_filter %}selected{% endif %}>{{ cat }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-4">
-        <button type="submit" class="btn btn-dark"><i class="bi bi-funnel me-1"></i> Filter</button>
-        <a href="{{ url_for('view_expenses') }}" class="btn btn-outline-secondary">Clear</a>
-      </div>
-    </form>
-  </div>
-
-  {% if expenses %}
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      {% for expense in expenses %}
-        <div class="col">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <h5 class="card-title fw-bold text-dark">{{ expense.category }}</h5>
-                <p class="card-text fs-5 fw-bold text-success">${{ "%.2f"|format(expense.amount) }}</p>
-              </div>
-              <p class="card-text text-muted mb-2">{{ expense.notes if expense.notes else 'No notes provided.' }}</p>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 text-end">
-              <small class="text-muted"><i class="bi bi-calendar3 me-1"></i> {{ expense.date_posted.strftime('%B %d, %Y') }}</small>
-            </div>
-          </div>
+    <form method="GET" action="{{ url_for('view_expenses') }}" class="mb-4">
+        <div class="input-group">
+            <label class="input-group-text" for="categoryFilter"><i class="bi bi-filter"></i></label>
+            <select class="form-select" id="categoryFilter" name="category" onchange="this.form.submit()">
+                <option value="">-- Filter by Category --</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if category == current_filter %}selected{% endif %}>
+                        {{ category }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if current_filter %}
+                <a href="{{ url_for('view_expenses') }}" class="btn btn-outline-secondary">Clear</a>
+            {% endif %}
         </div>
-      {% endfor %}
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Category</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col" class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if expenses %}
+                    {# This loop iterates through the 'expenses' list passed from the route #}
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-dark">{{ expense.category }}</span>
+                        </td>
+                        <td>{{ expense.date_posted.strftime('%b %d, %Y') }}</td>
+                        <td>{{ expense.notes or 'N/A' }}</td>
+                        <td class="text-end fw-bold">${{ "%.2f"|format(expense.amount) }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            <p class="fs-4">No expenses found. 🤷</p>
+                            <a href="{{ url_for('add_expense') }}" class="btn btn-dark">Add Your First Expense</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
     </div>
-  {% else %}
-    <div class="text-center py-5">
-        <h4>No Expenses Found!</h4>
-        <p class="text-muted">It looks like there's nothing here yet. Why not add one?</p>
-        <a href="{{ url_for('add_expense') }}" class="btn btn-dark mt-2">
-            <i class="bi bi-plus-circle me-1"></i> Add Your First Expense
-        </a>
-    </div>
-  {% endif %}
+</div>
 {% endblock %}
