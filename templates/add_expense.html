@@ -1,22 +1,24 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Expense{% endblock %}
+{% block title %}Add New Expense{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
-    <h2 class="mb-4 text-center fw-bold">Log a New Expense</h2>
-    <div class="card p-4 p-md-5">
+    <div class="glass-card p-4 p-md-5 text-dark"> <!-- Changed text-white to text-dark -->
+      <h2 class="mb-4 text-center fw-bold">Log a New Expense</h2>
       <form id="expenseForm" action="{{ url_for('add_expense') }}" method="POST">
+        <!-- Amount -->
         <div class="mb-3">
           <label for="amount" class="form-label">Amount</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
             <input type="text" class="form-control" id="amount" name="amount" required placeholder="e.g., 25.50">
           </div>
-          <div id="amountError" class="invalid-feedback d-block">Amount must be a valid number.</div>
+          <div id="amountError" class="invalid-feedback d-block text-danger">Amount must be a valid number.</div>
         </div>
 
+        <!-- Category -->
         <div class="mb-3">
           <label for="category" class="form-label">Category</label>
           <div class="input-group">
@@ -33,6 +35,7 @@
           </div>
         </div>
 
+        <!-- Date -->
         <div class="mb-3">
           <label for="date" class="form-label">Date</label>
           <div class="input-group">
@@ -41,12 +44,13 @@
           </div>
         </div>
 
+        <!-- Notes -->
         <div class="mb-4">
           <label for="notes" class="form-label">Notes (Optional)</label>
           <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="e.g., Lunch with colleagues"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">Add Expense</button>
+        <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">Submit Expense</button>
       </form>
     </div>
   </div>
@@ -55,8 +59,11 @@
 
 {% block scripts %}
   <script>
-    // Hide error message initially
-    $('#amountError').hide(); 
+    $(document).ready(function() {
+      $('#amountError').hide();
+      document.getElementById('date').valueAsDate = new Date();
+    });
   </script>
   <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
 {% endblock %}
+
